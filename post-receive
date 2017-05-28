@@ -1,0 +1,15 @@
+#!/bin/bash
+
+BUILDBOT_HOOK=/usr/share/buildbot/contrib/git_buildbot.py
+
+project="greet"
+repository=file:///home/dfroger/buildbot/pv-back.git
+
+while read oldrev newrev refname
+do
+    echo $oldrev $newrev $refname | /usr/bin/python -W ignore \
+        $BUILDBOT_HOOK \
+            --project $project \
+            --repository $repository \
+            --codebase $project &
+done
