@@ -3,50 +3,65 @@
 Buildbot recipes (tested with buildbot and buildbot-slave 0.8.9)
 REPOS=https://github.com/buildbot-cookbook
 
-# Set up root directory
+## Installation
+
+### Set up root directory
 mkdir buildbot-cookbook
 cd buildbot-cookbook
 source recipes/utils.sh
 ROOT=$PWD
 hook="$ROOT/recipes/post-receive"
 
-# Get recipes
+### Get recipes
 cd $ROOT
 git clone $REPOS/recipes
 
-# Fork some repos to push in and to be tested in buildbot
+### Fork some repos to push in and to be tested in buildbot
 git clone --bare $REPOS/libgreet
 git clone --bare $REPOS/hello
 
-# Install hooks to trigger buildbot
+### Install hooks to trigger buildbot
 install_hook $hook hello libgreet
 install_hook $hook hello hello
 
-# Clone repos so we can commit in it
+### Clone repos so we can commit in it
 git clone libgreet.git
 git clone hello.git
 
-# Set up master
+### Set up master
 cd $ROOT
 buildbot create-master master
 cp $ROOT/recipes/simple/master.cfg master/
 buildbot start master
 
-# Set up slave
+### Set up slave
 cd $ROOT
 buildslave create-slave slave localhost:9989 example-slave pass
 buildslave start slave
 
-# web interface
+### web interface
 visit: http://localhost:8010
 
-# For other recipes, copy master.cfg, and reconfig master
+### For other recipes, copy master.cfg, and reconfig master
 cd $ROOT
 cp recipes/RECIPE_DIR/master.cfg master/
 buildbot reconfig master
 
-# Cleaning (remove everything)
+### Cleaning (remove everything)
 cd $ROOT
 buildbot stop master
 buildslave stop slave
 rm -rf hello hello.git libgreet libgreet.git master slave
+
+## Recipe description
+
+### simple
+
+Pushing in `libgreet` git repository triggers tests on buildbot.
+
+### project
+
+project `hello` is made of codebases `libgreet` and `hello`.
+
+Pushing in one of `libgreet` or `hello` git repository triggers tests on
+buildbot.
