@@ -2,14 +2,15 @@
 
 BUILDBOT_HOOK=/usr/share/buildbot/contrib/git_buildbot.py
 
-project="greet"
-repository=file:///home/dfroger/buildbot/pv-back.git
+HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+HOOK_DIR=$(HERE)
+GIT_DIR=$(readlink -f $(HERE)/..)
 
 while read oldrev newrev refname
 do
     echo $oldrev $newrev $refname | /usr/bin/python -W ignore \
         $BUILDBOT_HOOK \
-            --project $project \
-            --repository $repository \
-            --codebase $project &
+            --project PROJECT \
+            --repository file://$GIT_DIR \
+            --codebase CODEBASE &
 done
